@@ -103,7 +103,9 @@ async function generateCommitMessage(apiUrl, apiKey) {
       const issue = data?.issues[0];
       const summary = issue?.fields?.summary;
       const key = issue?.key;
-      const name = issue?.fields?.components[0]?.name;
+      let name = issue?.fields?.components[0]?.name;
+      name = name?.split(" ")?.join("-");
+      
       if (!summary) {
         throw new Error("Summary is missing...");
       }
