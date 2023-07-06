@@ -1,5 +1,5 @@
 {
-  "name": "@dp/jira-commit",
+  "name": "fast-jira-commit",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

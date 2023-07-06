@@ -1,23 +1,21 @@
-# @dp/jira-commit
-
 This package makes your `git commit` faster by providing the `commit message` in case you use Jira.
 The pattern of the commit message is: `[JIRA_PROJECT_NAME][JIRA_ISSUE]: [JIRA_SUMMARY]`.
 
-> > The prerequisite for this to work is that the branch name should include a valid Jira issue number.
+>> The prerequisite for this to work is that the branch name should include a valid Jira issue number.
 
 ## Installation
 
-npm i -g @dp/jira-commit
+`npm i -g fast-jira-commit`
 
 ## How to use
 
 1. Run it directly from node_modules
-   `node {node_modules_file_path}/@dp/jira-commit/index.js`
+   `node {node_modules_file_path}/fast-jira-commit/index.js`
 
 OR
 
 2. Create an alias
-   `alias jc='node {node_modules_file_path}/@dp/jira-commit/index.js'`
+   `alias jc='node {node_modules_file_path}/fast-jira-commit/index.js'`
 
 ### Provide additional commit message
 You can provide an additional commit message. This message will be appended to the one provided by the library.
