@@ -15,8 +15,11 @@ let initialState = {
 try {
   await main();
 } catch (e) {
+  //   console.log(e);
   console.log(chalk.red("[ERROR]: " + e.message));
-  console.log("[INFO]:Try to run again the script with option '-r'");
+  if (!e.message?.includes("re-authenticate")) {
+    console.log("[INFO]:Try to run again the script with option '-r'");
+  }
 }
 
 async function main() {
@@ -90,6 +93,11 @@ async function generateCommitMessage(apiUrl, apiKey) {
         Authorization: `Bearer ${apiKey}`,
       },
     });
+    if (response.headers.get("Content-Type")?.includes("html")) {
+      throw new Error(
+        "Something went wrong, Maybe you need to re-authenticate with your jira provider..."
+      );
+    }
     const data = await response.json();
     if (data?.issues?.length >= 1) {
       const issue = data?.issues[0];
