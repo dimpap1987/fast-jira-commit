@@ -9,22 +9,12 @@ The pattern of the commit message is: `[JIRA_PROJECT_NAME][JIRA_ISSUE]: [JIRA_SU
 
 ## How to use
 
-1. Run it directly from node_modules
-   `node {node_modules_file_path}/fast-jira-commit/index.js`
+Type command `jc`
 
-OR
+#### Arguments:
 
-2. Create an alias
-   `alias jc='node {node_modules_file_path}/fast-jira-commit/index.js'`
-
-### Provide additional commit message
-You can provide an additional commit message. This message will be appended to the one provided by the library.
-
-Run `jc -m"additional message..."`
-
-### Reset the configuration
-
-Run `jc -r` in order to reset the configuration. You will be asked again to fill the configuration.
+- `-m"`This is a commit message`"`  -   You can provide an additional commit message. This message will be appended to the one provided by the library.
+- `-r`                            -   Reset configuration. You will be asked to fill the configuration again.
 
 ## Configuration
 
