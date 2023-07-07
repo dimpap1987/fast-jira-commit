@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { execSync } from "child_process";
 import fetch from "node-fetch";
 import readline from "readline";
@@ -105,7 +107,7 @@ async function generateCommitMessage(apiUrl, apiKey) {
       const key = issue?.key;
       let name = issue?.fields?.components[0]?.name;
       name = name?.split(" ")?.join("-");
-      
+
       if (!summary) {
         throw new Error("Summary is missing...");
       }
