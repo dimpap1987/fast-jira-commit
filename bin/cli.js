@@ -19,9 +19,8 @@ let initialState = {
 try {
   await main();
 } catch (e) {
-  //   console.log(e);
   console.log(chalk.red("[ERROR]: " + e.message));
-  if (!e.message?.includes("re-authenticate")) {
+  if (!(e.message?.includes("re-authenticate") || e.message?.includes("git"))) {
     console.log("[INFO]:Try to run again the script with option '-r'");
   }
 }
@@ -190,7 +189,10 @@ async function getBranchName() {
   try {
     return await gitBranch();
   } catch (error) {
-    console.error("Error retrieving branch name:", error);
+    if (error?.message?.includes(".git/HEAD does not exist")) {
+      throw new Error("The command should run inside a git repository");
+    }
+    throw new Error("Error retrieving branch name");
   }
 }
 
