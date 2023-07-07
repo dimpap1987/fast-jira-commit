@@ -1,7 +1,7 @@
 This package makes your `git commit` faster by providing the `commit message` in case you use Jira.
 The pattern of the commit message is: `[JIRA_PROJECT_NAME][JIRA_ISSUE]: [JIRA_SUMMARY]`.
 
->> The prerequisite for this to work is that the branch name should include a valid Jira issue number.
+> The prerequisite for this to work is that the branch name should include a valid Jira issue number.
 
 ## Installation
 

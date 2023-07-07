@@ -7,11 +7,13 @@ import chalk from "chalk";
 import fs from "fs";
 import path from "path";
 import gitBranch from "git-branch";
+import os from "os";
 
 //Initial state
+const configFolderPath = createConfigurationPath();
 let initialState = {
   arguments: extractCommandArguments(process.argv),
-  stateFilePath: path.resolve(process.argv[1].slice(0, -8), "user_state.json"),
+  configFilePath: path.join(configFolderPath, "config.json"),
 };
 
 try {
@@ -25,12 +27,15 @@ try {
 }
 
 async function main() {
+  // Create Folder in order to keep user's configuration
+  createFolderIfNotExists(configFolderPath);
+
   // delete `user_state` file if there is the `-r` argument
-  if (initialState.arguments.delete) {
-    await deleteFile(initialState.stateFilePath);
+  if (initialState.arguments?.delete) {
+    await deleteFile(initialState.configFilePath);
   }
 
-  const fileData = parseFileState(initialState.stateFilePath);
+  const fileData = parseFileState(initialState.configFilePath);
   //State after reading the file
   let state = {
     ...initialState,
@@ -48,7 +53,7 @@ async function main() {
 
     // Write user state in the folder f
     writeToFolder(
-      state.stateFilePath,
+      state.configFilePath,
       JSON.stringify({
         apiKey: state?.apiKey,
         project: state?.project,
@@ -259,4 +264,17 @@ async function checkForUserInput({ apiKey, project, jiraApiUrl }) {
   }
 
   return Object.keys(state)?.length > 0 ? state : null;
+}
+
+function createConfigurationPath() {
+  const folderName = "FastJiraCommit";
+  return os.platform() === "win32"
+    ? path.join(process.env.APPDATA, folderName)
+    : path.join(os.homedir(), folderName);
+}
+
+function createFolderIfNotExists(path) {
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path);
+  }
 }
