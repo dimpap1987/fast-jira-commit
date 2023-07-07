@@ -67,7 +67,7 @@ async function main() {
   if (!issue) {
     console.log(
       chalk.red("ERROR") +
-        " : Couldn't find any jira issue related with branch: " +
+        " : Couldn't find any jira issue related to the branch: " +
         chalk.yellow(branch)
     );
     return;
