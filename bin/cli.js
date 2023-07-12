@@ -20,9 +20,9 @@ try {
   await main();
 } catch (e) {
   console.log(chalk.red("[ERROR]: " + e.message));
-  if (!(e.message?.includes("re-authenticate") || e.message?.includes("git"))) {
-    console.log("[INFO]:Try to run again the script with option '-r'");
-  }
+  // if (!(e.message?.includes("re-authenticate") || e.message?.includes("git"))) {
+  //   console.log("[INFO]:Try to run again the script with option '-r'");
+  // }
 }
 
 async function main() {
@@ -39,7 +39,6 @@ async function main() {
   let state = {
     ...initialState,
     ...fileData,
-    jiraSearchQuery: `search?jql=project=${fileData?.project} AND key = `,
   };
 
   // Check for user inputs
@@ -55,26 +54,24 @@ async function main() {
       state.configFilePath,
       JSON.stringify({
         apiKey: state?.apiKey,
-        project: state?.project,
         jiraApiUrl: state.jiraApiUrl,
       })
     );
   }
 
-  const branch = await getBranchName();
-  const issue = extractIssue(branch, state.project);
+  const { project, issue } = await extractJiraProjectIssueName();
 
   if (!issue) {
     console.log(
       chalk.red("ERROR") +
-        " : Couldn't find any jira issue related to the branch: " +
-        chalk.yellow(branch)
+        " : Couldn't find any jira issue related to the project: " +
+        chalk.yellow(project)
     );
     return;
   }
 
   // create the full api url
-  const apiFullUrl = `${state.jiraApiUrl}/${state.jiraSearchQuery}${issue}`;
+  const apiFullUrl = `${state.jiraApiUrl}/search?jql=project=${project} AND key = ${issue}`;
 
   // make the request and retrieve the commit message
   let commitMessage = await generateCommitMessage(apiFullUrl, state.apiKey);
@@ -212,6 +209,9 @@ function extractCommandArguments(args) {
     if (arg?.startsWith("-r")) {
       acc = { ...acc, delete: true };
     }
+    if (arg?.startsWith("-i")) {
+      acc = { ...acc, issue: arg.slice(2) };
+    }
     return acc;
   }, {});
 }
@@ -248,15 +248,6 @@ async function checkForUserInput({ apiKey, project, jiraApiUrl }) {
     }
   }
 
-  if (!project) {
-    state.project = await getInputFromUser(`Provide Project : `);
-    state.jiraSearchQuery = `search?jql=project=${state.project} AND key = `;
-    if (!state.project?.trim()) {
-      console.log(chalk.red("INVALID Project"));
-      return;
-    }
-  }
-
   if (!jiraApiUrl) {
     state.jiraApiUrl = await getInputFromUser(`Provide API URL : `);
     if (!state.jiraApiUrl?.trim()) {
@@ -279,4 +270,37 @@ function createFolderIfNotExists(path) {
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
   }
+}
+
+function extractProject(branch) {
+  const projectIssue = branch?.split("-")?.[0];
+  return projectIssue?.includes("/")
+    ? projectIssue?.split("/")[1]
+    : projectIssue;
+}
+
+async function extractJiraProjectIssueName() {
+  //From argument -i
+  if (initialState?.arguments?.issue) {
+    const project = extractProject(initialState?.arguments?.issue);
+    if (!project) {
+      throw new Error("Couldn't extract project");
+    }
+    return {
+      project,
+      issue: extractIssue(initialState?.arguments?.issue, project),
+    };
+  }
+
+  // From branch
+  const branch = await getBranchName();
+  const project = extractProject(branch);
+  if (!project) {
+    throw new Error("Couldn't extract project from branch");
+  }
+
+  return {
+    project: extractProject(branch),
+    issue: extractIssue(branch, project),
+  };
 }
